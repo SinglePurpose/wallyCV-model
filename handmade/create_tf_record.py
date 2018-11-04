@@ -15,9 +15,9 @@ image_format = b"jpg"
 classes = [1]
 classes_text = ["waldo".encode('utf8')]
 
-labels_path = "./labels/lables.csv"
-images_path = "./images"
-tfrecord_output_file = "train.tfrecord"
+labels_path = "./train_labels/train_labels.csv"
+images_path = "./train_images"
+tfrecord_output_file = "train.record"
 
 writer = tf.python_io.TFRecordWriter(tfrecord_output_file)
 
