@@ -1,5 +1,5 @@
 # start training job in google-cloud
-gcloud ml-engine jobs submit training `whoami`_wally_detection_`date +%m_%d_%Y_%H_%M_%S` \
+gcloud ml-engine jobs submit training `whoami`_wally_STEP_BY_STEP_`date +%m_%d_%Y_%H_%M_%S` \
     --python-version 3.5 \
     --runtime-version 1.10 \
     --job-dir=gs://wallycv-model/model_dir \
@@ -9,14 +9,14 @@ gcloud ml-engine jobs submit training `whoami`_wally_detection_`date +%m_%d_%Y_%
     --config object_detection/samples/cloud/cloud.yml \
     -- \
     --model_dir=gs://wallycv-model/model_dir \
-    --pipeline_config_path=gs://wallycv-model/data/ssd_inception_v2_coco.config
+    --pipeline_config_path=gs://wallycv-model/data/faster_rcnn_inception_v2_coco.config
 
 # start training job locally
-PIPELINE_CONFIG_PATH=/Users/taras/Projects/uni/Samples/models/research/object_detection/samples/configs/ssd_inception_v2_coco.config
-MODEL_DIR=/Users/taras/Projects/uni/wallyCV-model/handmade/trained
-NUM_TRAIN_STEPS=1000
+PIPELINE_CONFIG_PATH=/Users/taras/Projects/uni/wallyCV-model/handmade/training_iterations/train64_eval64/models/model/faster_rcnn_inception_v2_coco.config
+MODEL_DIR=/Users/taras/Projects/uni/wallyCV-model/handmade/training_iterations/train64_eval64/models/model
+NUM_TRAIN_STEPS=50000
 SAMPLE_1_OF_N_EVAL_EXAMPLES=1
-python model_main.py \
+python object_detection/model_main.py \
     --pipeline_config_path=${PIPELINE_CONFIG_PATH} \
     --model_dir=${MODEL_DIR} \
     --num_train_steps=${NUM_TRAIN_STEPS} \
