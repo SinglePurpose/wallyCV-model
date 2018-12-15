@@ -6,40 +6,30 @@ import math
 import numpy
 from PIL import Image
 
+project_id = 'wallycv-tom'
+compute_region = 'us-central1'
+model_id = 'ICN2382104611694121566'
+score_threshold = '0.0'
+results64 = []
+results128 = []
+results256 = []
+cropped_image_paths = []
+
+# splits full sized image into smaller parts and saves them
 def crop_image(imagePath, size):
   image = cv2.imread(imagePath)
-  #print (image.shape)
-  
-  # cropped = image[0:100, 2400:2500]
   
   xTiles = math.ceil(image.shape[1] / size)
   yTiles = math.ceil(image.shape[0] / size)
-  imageAmount = xTiles * yTiles
-  imageHeight = image.shape[0]
-  imageWidth = image.shape[1]
   
-  # 
   i = 0
   for xTile in range(0, xTiles):
     for yTile in range(0, yTiles):
       croppedImage = image[yTile * size:yTile * size + size, xTile * size:xTile * size + size]
       i += 1
       cv2.imwrite("cropped_images/crop%d.jpg" % i, croppedImage)
+      cropped_image_paths.append('cropped_images/crop' + str(i) + '.jpg')
 
-
-
-project_id = 'wallycv-tom'
-compute_region = 'us-central1'
-model_id = 'ICN2382104611694121566'
-cropped_image_path = []
-score_threshold = '0.0'
-imageAmount = 0
-
-
-#for x in range (1, imageAmount + 1):
-#for x in range (1, 3):
-for x in range (1, 70):
-  cropped_image_path.append('cropped_images/crop' + str(x) + '.jpg')
 
 automl_client = automl.AutoMlClient()
 
@@ -50,10 +40,6 @@ model_full_id = automl_client.model_path(
 
 # Create client for prediction service.
 prediction_client = automl.PredictionServiceClient()
-
-results64 = []
-results128 = []
-results256 = []
 
 def get_prediction(image):
   # Read the image and assign to payload.
@@ -69,12 +55,9 @@ def get_prediction(image):
       params = {"score_threshold": score_threshold}
   
   response = prediction_client.predict(model_full_id, payload, params)
-  
-  # print("Prediction results:")
-  for result in response.payload:
-      # print("Predicted class name: {}".format(result.display_name))
-      # print("Predicted class score: {}".format(result.classification.score))
 
+# generated prediction arrays for each label
+  for result in response.payload:
       if result.display_name == "waldo_64":
         results64.append(result.classification.score)
 
@@ -85,21 +68,21 @@ def get_prediction(image):
         results256.append(result.classification.score)
 
 
-crop_image('full.jpg', 64)
+crop_image('full.jpg', 256)
 
-for image in cropped_image_path:
+# starts prediction for each cropped image
+j = 1
+for image in cropped_image_paths:
+  print(str(j) + "/" + str(len(cropped_image_paths)) + " images predicted")
+  j += 1
   get_prediction(image)
-  
-# print (results64)
-# print (results128)
-# print (results256)
 
+# prints highest prediction index for each label
 print("64 best pred index: " + str(numpy.argmax(results64)))
 print("128 best pred index: " + str(numpy.argmax(results128)))
 print("256 best pred index: " + str(numpy.argmax(results256)))
 
-#cv2.imshow('sdfs', 'full.jpg')
-#cv2.waitKey(0)
 
-img = Image.open('cropped_images/crop' + str(numpy.argmax(results64) + 1) + '.jpg')
+# searches for image with highest prediction and shows it
+img = Image.open('cropped_images/crop' + str(numpy.argmax(results256) + 1) + '.jpg')
 img.show()
