@@ -4,6 +4,7 @@ import sys
 import os
 import math
 import numpy
+import glob
 from PIL import Image
 
 project_id = 'wallycv-tom'
@@ -14,6 +15,12 @@ results64 = []
 results128 = []
 results256 = []
 cropped_image_paths = []
+
+# clears cropped images from prevous runs
+imageFiles = glob.glob('cropped_images/*')
+for f in imageFiles:
+  os.remove(f)
+
 
 # splits full sized image into smaller parts and saves them
 def crop_image(imagePath, size):
@@ -68,7 +75,8 @@ def get_prediction(image):
         results256.append(result.classification.score)
 
 
-crop_image('full.jpg', 256)
+# CL input - 1. image path 2. crop size
+crop_image(str(sys.argv[1]), int(sys.argv[2]))
 
 # starts prediction for each cropped image
 j = 1
@@ -77,12 +85,14 @@ for image in cropped_image_paths:
   j += 1
   get_prediction(image)
 
-# prints highest prediction index for each label
-print("64 best pred index: " + str(numpy.argmax(results64)))
-print("128 best pred index: " + str(numpy.argmax(results128)))
-print("256 best pred index: " + str(numpy.argmax(results256)))
-
-
 # searches for image with highest prediction and shows it
-img = Image.open('cropped_images/crop' + str(numpy.argmax(results256) + 1) + '.jpg')
+imgNum = 0
+if sys.argv[2] == 64:
+  imgNum = numpy.argmax(results64) + 1
+if sys.argv[2] == 128:
+  imgNum = numpy.argmax(results128) + 1
+if sys.argv[2] == 64:
+  imgNum = numpy.argmax(results256) + 1
+
+img = Image.open('cropped_images/crop' + str(imgNum) + '.jpg')
 img.show()
