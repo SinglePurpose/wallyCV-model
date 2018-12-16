@@ -91,7 +91,7 @@ if sys.argv[2] == 64:
   imgNum = numpy.argmax(results64) + 1
 if sys.argv[2] == 128:
   imgNum = numpy.argmax(results128) + 1
-if sys.argv[2] == 64:
+if sys.argv[2] == 256:
   imgNum = numpy.argmax(results256) + 1
 
 img = Image.open('cropped_images/crop' + str(imgNum) + '.jpg')
