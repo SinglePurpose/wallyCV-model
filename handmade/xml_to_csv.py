@@ -25,15 +25,15 @@ def xml_to_csv(path):
                      )
             xml_list.append(value)
     column_name = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
-    xml_ready = pd.DataFrame(xml_list, column_name)
+    xml_ready = pd.DataFrame(xml_list, columns=column_name)
     return xml_ready
 
 
 def main():
     for folder in ['train', 'eval']:
-        image_path = os.path.join(os.getcwd(), ('dataset/' + folder))
+        image_path = os.path.join(os.getcwd(), ('dataset/dataset/' + folder))
         xml_temp = xml_to_csv(image_path)
-        xml_temp.to_csv(('PATH_TO_PARENT_OF_DATASET_FOLDER' + folder + '_labels.csv'), None)
+        xml_temp.to_csv(('~/Desktop/' + folder + '_labels.csv'), index=None)
         print('Jobs\'s done!')
 
 

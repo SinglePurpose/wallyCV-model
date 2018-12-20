@@ -1,5 +1,5 @@
 # Script for final preparation stage of the dataset.
-# i.e. we pack our labels from the .csv file and our images into a single binary .tfrecord file.
+# i.e. we pack our labels from the .csv file and our images into a single binary .record file.
 # This binary file is needed for training the Object Detection Model.
 # This approach is much more efficient. i.e. by storing the data in one binary file, we have it in one block
 # of memory. Compared to storing each .jpg and labels separately. Which results in time-consuming read operations,
@@ -14,14 +14,14 @@ image_format = b"jpg"
 classes = [1]
 classes_text = ["waldo".encode('utf8')]
 
-labels_path = "PATH_TO/eval_labels.csv"
-images_path = "PATH_TO/images/test"
-tfrecord_output_file = "PATH_TO/eval.record"
+labels_path = "/Users/taras/Projects/uni/wallyCV-model/handmade/dataset/train_labels.csv"
+images_path = "/Users/taras/Projects/uni/wallyCV-model/handmade/dataset/train"
+tfrecord_output_file = "/Users/taras/Projects/uni/wallyCV-model/handmade/dataset/train.record"
 
 writer = tf.python_io.TFRecordWriter(tfrecord_output_file)
 
 with open(labels_path, newline="") as csv_file:
-    reader = csv.reader(csv_file, delimiter=',')
+    reader = csv.reader(csv_file, delimiter=';')
     headers = next(reader, None)
     for row in reader:
         # retrieve the info from each row in csv file

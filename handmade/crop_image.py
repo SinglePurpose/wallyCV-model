@@ -1,3 +1,5 @@
+# This script crops the original image into smaller pieces
+
 from tqdm import tqdm
 import os
 from PIL import Image
