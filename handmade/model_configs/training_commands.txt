@@ -1,0 +1,40 @@
+# start training job in google-cloud
+gcloud ml-engine jobs submit training `whoami`_wally_webcam`date +%m_%d_%Y_%H_%M_%S` \
+    --python-version 3.5 \
+    --runtime-version 1.10 \
+    --job-dir=gs://wallycv/model_dir \
+    --packages dist/object_detection-0.1.tar.gz,slim/dist/slim-0.1.tar.gz,/tmp/pycocotools/pycocotools-2.0.tar.gz \
+    --module-name object_detection.model_main \
+    --region europe-west1 \
+    --config object_detection/samples/cloud/cloud.yml \
+    -- \
+    --model_dir=gs://wallycv/model_dir \
+    --pipeline_config_path=gs://wallycv/data/faster_rcnn_inception_v2_coco.config
+
+# start training job locally
+PIPELINE_CONFIG_PATH=/Users/taras/Projects/uni/wallyCV-model/handmade/training_iterations/train64_resz_eval64_webcam/models/model/faster_rcnn_inception_v2_coco.config
+MODEL_DIR=/Users/taras/Projects/uni/wallyCV-model/handmade/training_iterations/train64_resz_eval64_webcam/models/model
+NUM_TRAIN_STEPS=10000
+SAMPLE_1_OF_N_EVAL_EXAMPLES=1
+python object_detection/model_main.py \
+    --pipeline_config_path=${PIPELINE_CONFIG_PATH} \
+    --model_dir=${MODEL_DIR} \
+    --num_train_steps=${NUM_TRAIN_STEPS} \
+    --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES \
+    --alsologtostderr
+
+# access the bucket
+gcloud auth application-default login
+
+# start Tensorboard locally on localhost:6006
+tensorboard --logdir=/Users/taras/Projects/uni/wallyCV-model/handmade/training_iterations/train64_resz_eval64_webcam/models/model
+
+# export trained model
+python export_inference_graph.py \
+    --input_type image_tensor \
+    --pipeline_config_path /Users/taras/Projects/uni/wallyCV-model/handmade/model_configs/faster_rcnn_inception_v2_coco.config \
+    --trained_checkpoint_prefix /Users/taras/Projects/uni/wallyCV-model/handmade/bucket/model_dir/model.ckpt-74376 \
+    --output_directory /Users/taras/Projects/uni/wallyCV-model/handmade/ready_model/webcam_training/inference_graph
+
+
+sys.path.insert(0, '/Users/taras/Projects/uni/Samples/models/research/object_detection')
