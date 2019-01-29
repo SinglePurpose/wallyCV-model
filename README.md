@@ -1,1 +1,1 @@
-## This is the repo for AVPRG Project "Wally Object Detection Model" implemented with Google AutoML Vision (see `autoML` folder) and with tensorflow object detection model "faster RCNN Inception v2" + openCV (see `handmade` folder). 
+## This is the repo for "Wally Object Detection Model" Project implemented with Google AutoML Vision (see `autoML` folder) and with tensorflow object detection model "faster RCNN Inception v2" + openCV (see `handmade` folder). 
